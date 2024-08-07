@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Youtube subtitles
 // @namespace    http://fqdeng.com
-// @version      2024-08-06
+// @version      1.0.1
 // @description  show the subtitels like lyrics plane
 // @author       fqdeng
 // @match        https://www.youtube.com/*
@@ -9,6 +9,8 @@
 // @grant        none
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
 // @require      https://code.jquery.com/ui/1.12.1/jquery-ui.min.js
+// @updateURL    https://raw.githubusercontent.com/fqdeng/youtube-subtitles-panel/master/main.js
+// @downloadURL  https://raw.githubusercontent.com/fqdeng/youtube-subtitles-panel/master/main.js
 // ==/UserScript==
 
 (function() {
