@@ -11,7 +11,6 @@
 // @require      https://code.jquery.com/ui/1.12.1/jquery-ui.min.js
 // @updateURL    https://raw.githubusercontent.com/fqdeng/youtube-subtitles-panel/master/main.user.js
 // @downloadURL  https://raw.githubusercontent.com/fqdeng/youtube-subtitles-panel/master/main.user.js
-// @license MIT
 // ==/UserScript==
 
 (function() {
@@ -53,25 +52,33 @@
 
     function updateSubtitleScroll(videoTime) {
         const subtitles = contentDiv.getElementsByTagName('div');
-        let activeFound = false; // Track if the active subtitle has been found and highlighted
 
-        for (let i = 0; i < subtitles.length; i++) {
-            const subtitleData = subtitles[i].dataset;
+        let left = 0;
+        let right = subtitles.length - 1;
+        let activeIndex = -1; // initlize it
+
+        while (left <= right) {
+            const mid = Math.floor((left + right) / 2);
+            const subtitleData = subtitles[mid].dataset;
             const start = parseFloat(subtitleData.start);
             const duration = parseFloat(subtitleData.dur);
+            const end = start + duration;
 
-            if (start <= videoTime && videoTime <= start + duration) {
-                subtitles[i].style.backgroundColor = 'orange';
-                subtitles[i].scrollIntoView({ behavior: 'smooth', block: 'center' });
-                activeFound = true;
+            if (start > videoTime) {
+                right = mid - 1;
+            } else if (end < videoTime) {
+                left = mid + 1;
             } else {
-                subtitles[i].style.backgroundColor = ''; // Reset background color for non-active subtitles
+                activeIndex = mid; // Find active subtitle
+                break;
             }
         }
 
-        // If no active subtitle is found (e.g., between subtitles), ensure all are reset
-        if (!activeFound) {
-            for (let i = 0; i < subtitles.length; i++) {
+        for (let i = 0; i < subtitles.length; i++) {
+            if (i === activeIndex) {
+                subtitles[i].style.backgroundColor = 'orange';
+                subtitles[i].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else {
                 subtitles[i].style.backgroundColor = '';
             }
         }
