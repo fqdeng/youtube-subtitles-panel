@@ -90,6 +90,9 @@
 
 
     function loadSubtitles() {
+        // Clear existing subtitles
+        contentDiv.innerHTML = ''; // Or use the loop method if preferred
+
         // Load and display subtitles
         renderSubtitles(getVideoIdFromUrl()).then(subtitles => {
             if (subtitles) {
