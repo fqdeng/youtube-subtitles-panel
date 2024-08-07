@@ -11,6 +11,7 @@
 // @require      https://code.jquery.com/ui/1.12.1/jquery-ui.min.js
 // @updateURL    https://raw.githubusercontent.com/fqdeng/youtube-subtitles-panel/master/main.user.js
 // @downloadURL  https://raw.githubusercontent.com/fqdeng/youtube-subtitles-panel/master/main.user.js
+// @license MIT
 // ==/UserScript==
 
 (function() {
