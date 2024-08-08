@@ -82,7 +82,7 @@
         for (let i = 0; i < subtitles.length; i++) {
             if (i === activeIndex) {
                 subtitles[i].style.backgroundColor = 'orange';
-                subtitles[i].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                subtitles[i].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             } else {
                 subtitles[i].style.backgroundColor = '';
             }
