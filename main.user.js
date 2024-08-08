@@ -68,7 +68,7 @@
 
             if (start > videoTime) {
                 right = mid - 1;
-            } else if (end < videoTime) {
+            } else if (end <= videoTime) {
                 left = mid + 1;
             } else {
                 activeIndex = mid; // Find active subtitle
@@ -130,6 +130,7 @@
                         if (video) {
                             video.currentTime = parseFloat(this.dataset.start);
                         }
+                        updateSubtitleScroll(this.dataset.start);
                     });
                     contentDiv.appendChild(subtitleDiv);
                 });
