@@ -18,7 +18,7 @@
 (function() {
     'use strict';
     let draggableDiv = null;
-    let contentDiv = null;
+    let contentDiv = document.createElement('div');
     let windowDiv = null;
     const textArea = document.createElement('textarea');
 
@@ -190,7 +190,7 @@
             });
             headerDiv.textContent = 'Drag me';
 
-            contentDiv = document.createElement('div');
+            
             contentDiv.className = 'content';
             contentDiv.style.padding = '10px';
 
