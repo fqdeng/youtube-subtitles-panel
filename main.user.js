@@ -75,7 +75,10 @@
                 break;
             }
         }
+        updateSubtitles(activeIndex, subtitles);
+    }
 
+    function updateSubtitles(activeIndex, subtitles){
         for (let i = 0; i < subtitles.length; i++) {
             if (i === activeIndex) {
                 subtitles[i].style.backgroundColor = 'orange';
@@ -113,7 +116,8 @@
         // Load and display subtitles
         renderSubtitles(getVideoIdFromUrl()).then(subtitles => {
             if (subtitles) {
-                subtitles.forEach(subtitle => {
+                for (let i = 0; i < subtitles.length; i++) {
+                    var subtitle = subtitles[i];
                     const subtitleDiv = document.createElement('div');
                     subtitleDiv.style.fontSize = '16px'; // Apply font size to each subtitle
                     subtitleDiv.style.lineHeight = '1.4';
@@ -124,16 +128,18 @@
                     subtitleDiv.textContent = `${decodeHtmlEntities(subtitle.text)}`;
                     subtitleDiv.dataset.start = subtitle.start;
                     subtitleDiv.dataset.dur = subtitle.dur;
+                    subtitleDiv.dataset.idx = i;
                     // Add click event listener to set video currentTime
                     $( subtitleDiv ).on( "dblclick", function() {
                         const video = document.getElementsByTagName("video")[0];
                         if (video) {
                             video.currentTime = parseFloat(this.dataset.start);
                         }
-                        updateSubtitleScroll(this.dataset.start);
+                        const subtitles = contentDiv.getElementsByTagName('div');
+                        updateSubtitles(this.dataset.idx, subtitles)
                     });
                     contentDiv.appendChild(subtitleDiv);
-                });
+                }
             }
         });
     }
