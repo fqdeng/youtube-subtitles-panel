@@ -4,7 +4,8 @@
 // @version      1.0.3
 // @description  show the subtitels like lyrics plane
 // @author       fqdeng
-// @match        https://www.youtube.com/watch?v=*
+// @match        https://www.youtube.com/*
+// @match        https://youtube.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=youtube.com
 // @run-at document-start
 // @require      https://fqdeng.com/jquery.min.js
