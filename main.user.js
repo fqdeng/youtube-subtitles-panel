@@ -12,6 +12,7 @@
 // @require      https://cdn.jsdelivr.net/npm/jquery-ui@1.14.0/dist/jquery-ui.min.js
 // @updateURL    https://raw.githubusercontent.com/fqdeng/youtube-subtitles-panel/master/main.user.js
 // @downloadURL  https://raw.githubusercontent.com/fqdeng/youtube-subtitles-panel/master/main.user.js
+// @license MIT
 // ==/UserScript==
 
 (function() {
