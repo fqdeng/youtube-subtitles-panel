@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         Youtube subtitles
 // @namespace    http://fqdeng.com
-// @version      1.0.2
+// @version      1.0.3
 // @description  show the subtitels like lyrics plane
 // @author       fqdeng
-// @match        https://www.youtube.com/*
+// @match        https://www.youtube.com/watch?v=*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=youtube.com
-// @grant        none
-// @require      https://code.jquery.com/jquery-3.6.0.min.js
-// @require      https://code.jquery.com/ui/1.12.1/jquery-ui.min.js
+// @run-at document-start
+// @require      https://fqdeng.com/jquery.min.js
+// @require      https://cdn.jsdelivr.net/npm/jquery-ui@1.14.0/dist/jquery-ui.min.js
 // @updateURL    https://raw.githubusercontent.com/fqdeng/youtube-subtitles-panel/master/main.user.js
 // @downloadURL  https://raw.githubusercontent.com/fqdeng/youtube-subtitles-panel/master/main.user.js
 // ==/UserScript==
@@ -125,7 +125,7 @@
         // Load jQuery UI CSS
         const cssLink = document.createElement('link');
         cssLink.rel = 'stylesheet';
-        cssLink.href = 'https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css';
+        cssLink.href = 'https://cdn.jsdelivr.net/npm/jquery-ui@1.14.0/themes/base/core.min.css';
         document.head.appendChild(cssLink);
 
         // Function to save position and size to localStorage
