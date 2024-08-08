@@ -118,11 +118,19 @@
                     subtitleDiv.style.fontSize = '16px'; // Apply font size to each subtitle
                     subtitleDiv.style.lineHeight = '1.4';
                     subtitleDiv.style.marginBottom = '5px'; // Add space between subtitles
+                    subtitleDiv.style.cursor = 'pointer'; 
                     const startTime = parseFloat(subtitle.start).toFixed(2);
                     const duration = parseFloat(subtitle.dur).toFixed(2);
                     subtitleDiv.textContent = `${decodeHtmlEntities(subtitle.text)}`;
                     subtitleDiv.dataset.start = subtitle.start;
                     subtitleDiv.dataset.dur = subtitle.dur;
+                    // Add click event listener to set video currentTime
+                    $( subtitleDiv ).on( "dblclick", function() {
+                        const video = document.getElementsByTagName("video")[0];
+                        if (video) {
+                            video.currentTime = parseFloat(this.dataset.start);
+                        }
+                    });
                     contentDiv.appendChild(subtitleDiv);
                 });
             }
