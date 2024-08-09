@@ -82,7 +82,7 @@
         for (let i = 0; i < subtitles.length; i++) {
             if (i === activeIndex) {
                 subtitles[i].style.backgroundColor = 'orange';
-                subtitles[i].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                subtitles[i].scrollIntoView({ behavior: 'smooth', block: 'center' });
             } else {
                 subtitles[i].style.backgroundColor = '';
             }
@@ -149,7 +149,7 @@
         // Load jQuery UI CSS
         const cssLink = document.createElement('link');
         cssLink.rel = 'stylesheet';
-        cssLink.href = 'https://cdn.jsdelivr.net/npm/jquery-ui@1.14.0/themes/base/core.min.css';
+        cssLink.href = 'https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css';
         document.head.appendChild(cssLink);
 
         // Function to save position and size to localStorage
