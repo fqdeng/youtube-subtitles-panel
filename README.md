@@ -4,3 +4,8 @@ Simple youtube subtitles panel, make you easy to read subtitles and shadow readi
 # Example
 <img src="image/example.jpg" width="100%">
 
+# How to use
+npm install
+
+dev: npm run dev
+prod: npm run build
