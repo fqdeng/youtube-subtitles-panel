@@ -303,11 +303,26 @@
         }
     }
 
+
+    // Function to log fullscreen state
+    const logFullscreenState = () => {
+        if (document.fullscreenElement) {
+            console.log('YouTube is in fullscreen mode');
+            $(draggableDiv).hide()
+        } else {
+            console.log('YouTube exited fullscreen mode');
+            $(draggableDiv).show()
+        }
+    };
+
+
     function main(){
         renderDragableDiv();
         //handle youtube page changed event
-        window.addEventListener('yt-page-data-updated', onPageChanged);
+        document.addEventListener('fullscreenchange', logFullscreenState);
+        document.addEventListener('yt-page-data-updated', onPageChanged);
         setupVideoPlayerListener();
+
     }
 
     main();
