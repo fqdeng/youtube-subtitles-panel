@@ -15,7 +15,8 @@ export default defineConfig({
                 author: 'fqdeng',
                 icon: 'https://www.google.com/s2/favicons?sz=64&domain=youtube.com',
                 name: 'Youtube subtitles',
-                version: '1.0.3'
+                version: '1.0.3',
+                license: 'MIT'
             },
         }),
     ],
