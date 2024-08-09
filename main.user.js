@@ -15,7 +15,7 @@
 // @license MIT
 // ==/UserScript==
 
-(function() {
+(function () {
     'use strict';
     let draggableDiv = null;
     let contentDiv = document.createElement('div');
@@ -35,12 +35,12 @@
 
     function onPageChanged() {
         console.log('url change');
-        if (!isYouTubeVideoUrl()){
-            if (draggableDiv){
+        if (!isYouTubeVideoUrl()) {
+            if (draggableDiv) {
                 $(draggableDiv).hide()
             }
-        }else{
-            if (draggableDiv){
+        } else {
+            if (draggableDiv) {
                 $(draggableDiv).show()
             }
         }
@@ -78,11 +78,11 @@
         updateSubtitles(activeIndex, subtitles);
     }
 
-    function updateSubtitles(activeIndex, subtitles){
+    function updateSubtitles(activeIndex, subtitles) {
         for (let i = 0; i < subtitles.length; i++) {
             if (i === activeIndex) {
                 subtitles[i].style.backgroundColor = 'orange';
-                subtitles[i].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                subtitles[i].scrollIntoView({behavior: 'smooth', block: 'center'});
             } else {
                 subtitles[i].style.backgroundColor = '';
             }
@@ -96,7 +96,7 @@
         if (player) {
             setInterval(() => {
                 const currentTime = player.currentTime;
-                if (previousCurrentTime == currentTime){
+                if (previousCurrentTime == currentTime) {
                     //Do nothing here, cause youtube video player has been paused
                 } else {
                     previousCurrentTime = currentTime;
@@ -122,7 +122,7 @@
                     subtitleDiv.style.fontSize = '16px'; // Apply font size to each subtitle
                     subtitleDiv.style.lineHeight = '1.4';
                     subtitleDiv.style.marginBottom = '5px'; // Add space between subtitles
-                    subtitleDiv.style.cursor = 'pointer'; 
+                    subtitleDiv.style.cursor = 'pointer';
                     const startTime = parseFloat(subtitle.start).toFixed(2);
                     const duration = parseFloat(subtitle.dur).toFixed(2);
                     subtitleDiv.textContent = `${decodeHtmlEntities(subtitle.text)}`;
@@ -130,7 +130,7 @@
                     subtitleDiv.dataset.dur = subtitle.dur;
                     subtitleDiv.dataset.idx = i;
                     // Add click event listener to set video currentTime
-                    $( subtitleDiv ).on( "dblclick", function() {
+                    $(subtitleDiv).on("dblclick", function () {
                         const video = document.getElementsByTagName("video")[0];
                         if (video) {
                             video.currentTime = parseFloat(this.dataset.start);
@@ -145,7 +145,7 @@
     }
 
 
-     function renderDragableDiv(){
+    function renderDragableDiv() {
         // Load jQuery UI CSS
         const cssLink = document.createElement('link');
         cssLink.rel = 'stylesheet';
@@ -154,17 +154,22 @@
 
         // Function to save position and size to localStorage
         function savePositionAndSize(left, top, width, height) {
-            localStorage.setItem('draggableSubtitlesPosition', JSON.stringify({ left, top, width, height }));
+            localStorage.setItem('draggableSubtitlesPosition', JSON.stringify({left, top, width, height}));
         }
 
         // Function to get position and size from localStorage
         function getPositionAndSize() {
             const savedPosition = localStorage.getItem('draggableSubtitlesPosition');
-            return savedPosition ? JSON.parse(savedPosition) : { left: '859px', top: '83px', width: '384.891px', height: '436px' };
+            return savedPosition ? JSON.parse(savedPosition) : {
+                left: '859px',
+                top: '83px',
+                width: '384.891px',
+                height: '436px'
+            };
         }
 
         // Wait for the document to be ready
-        $(document).ready(function() {
+        $(document).ready(function () {
             // Get initial position and size from localStorage
             const initialPositionAndSize = getPositionAndSize();
 
@@ -197,7 +202,7 @@
             });
             headerDiv.textContent = 'Drag me';
 
-            
+
             contentDiv.className = 'content';
             contentDiv.style.padding = '10px';
 
@@ -220,7 +225,7 @@
             // Make the window draggable
             $('#draggableSubtitles').draggable({
                 handle: '.header',
-                stop: function(event, ui) {
+                stop: function (event, ui) {
                     const left = ui.position.left + 'px';
                     const top = ui.position.top + 'px';
                     const width = $('#draggableSubtitles').width() + 'px';
@@ -231,7 +236,7 @@
 
             // Make the window resizable
             $('#draggableSubtitles').resizable({
-                stop: function(event, ui) {
+                stop: function (event, ui) {
                     const left = ui.position.left + 'px';
                     const top = ui.position.top + 'px';
                     const width = ui.size.width + 'px';
@@ -242,7 +247,7 @@
 
 
         });
-   }
+    }
 
     // Function to load subtitles
     async function renderSubtitles(videoId) {
@@ -293,7 +298,7 @@
                 const dur = texts[i].getAttribute('dur');
                 let text = texts[i].textContent;
                 text = decodeHtmlEntities(text); // Decode HTML entities here
-                subtitles.push({ start, dur, text });
+                subtitles.push({start, dur, text});
             }
 
             console.log('Subtitles:', subtitles);
@@ -302,7 +307,6 @@
             console.error('An error occurred:', error);
         }
     }
-
 
     // Function to log fullscreen state
     const logFullscreenState = () => {
@@ -315,14 +319,12 @@
         }
     };
 
-
-    function main(){
+    function main() {
         renderDragableDiv();
         //handle youtube page changed event
         document.addEventListener('fullscreenchange', logFullscreenState);
         document.addEventListener('yt-page-data-updated', onPageChanged);
         setupVideoPlayerListener();
-
     }
 
     main();
