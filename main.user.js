@@ -92,20 +92,18 @@
     var previousCurrentTime = null;
 
     function setupVideoPlayerListener() {
-        var player = document.getElementsByTagName("video")[0];
-        if (player) {
             setInterval(() => {
-                const currentTime = player.currentTime;
-                if (previousCurrentTime == currentTime) {
-                    //Do nothing here, cause youtube video player has been paused
-                } else {
-                    previousCurrentTime = currentTime;
-                    updateSubtitleScroll(currentTime);
+                var player = document.getElementsByTagName("video")[0];
+                if (player) {
+                    const currentTime = player.currentTime;
+                    if (previousCurrentTime === currentTime) {
+                        //Do nothing here, cause youtube video player has been paused
+                    } else {
+                        previousCurrentTime = currentTime;
+                        updateSubtitleScroll(currentTime);
+                    }
                 }
             }, 1000); // Update every second
-        } else {
-            setTimeout(setupVideoPlayerListener, 1000); // Retry after 1 second if player not ready
-        }
     }
 
 
