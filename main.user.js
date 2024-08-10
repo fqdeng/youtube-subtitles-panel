@@ -21,6 +21,8 @@
     let contentDiv = document.createElement('div');
     let windowDiv = null;
     const textArea = document.createElement('textarea');
+    const item = localStorage.getItem("autoScrollEnabled");
+    let autoScrollEnabled = !item || item === 'true'; // Initialize auto-scroll as enabled
 
     function getVideoIdFromUrl() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -92,18 +94,20 @@
     var previousCurrentTime = null;
 
     function setupVideoPlayerListener() {
-            setInterval(() => {
-                var player = document.getElementsByTagName("video")[0];
-                if (player) {
-                    const currentTime = player.currentTime;
-                    if (previousCurrentTime === currentTime) {
-                        //Do nothing here, cause youtube video player has been paused
-                    } else {
+        setInterval(() => {
+            var player = document.getElementsByTagName("video")[0];
+            if (player) {
+                const currentTime = player.currentTime;
+                if (previousCurrentTime === currentTime) {
+                    //Do nothing here, cause YouTube video player has been paused
+                } else {
+                    if (autoScrollEnabled) {
                         previousCurrentTime = currentTime;
                         updateSubtitleScroll(currentTime);
                     }
                 }
-            }, 1000); // Update every second
+            }
+        }, 1000); // Update every second
     }
 
 
@@ -115,14 +119,12 @@
         renderSubtitles(getVideoIdFromUrl()).then(subtitles => {
             if (subtitles) {
                 for (let i = 0; i < subtitles.length; i++) {
-                    var subtitle = subtitles[i];
+                    const subtitle = subtitles[i];
                     const subtitleDiv = document.createElement('div');
                     subtitleDiv.style.fontSize = '16px'; // Apply font size to each subtitle
                     subtitleDiv.style.lineHeight = '1.4';
                     subtitleDiv.style.marginBottom = '5px'; // Add space between subtitles
                     subtitleDiv.style.cursor = 'pointer';
-                    const startTime = parseFloat(subtitle.start).toFixed(2);
-                    const duration = parseFloat(subtitle.dur).toFixed(2);
                     subtitleDiv.textContent = `${decodeHtmlEntities(subtitle.text)}`;
                     subtitleDiv.dataset.start = subtitle.start;
                     subtitleDiv.dataset.dur = subtitle.dur;
@@ -142,8 +144,30 @@
         });
     }
 
+    function createSwitchButton() {
+        const switchButton = document.createElement('button');
+        switchButton.textContent = `Auto-Scroll: ${autoScrollEnabled ? 'ON' : 'OFF'}`;
+        switchButton.id = 'toggleAutoScroll';
+        switchButton.style.position = 'absolute';
+        switchButton.style.bottom = '10px';
+        switchButton.style.left = '10px';
+        switchButton.style.padding = '5px 10px';
+        switchButton.style.cursor = 'pointer';
 
-    function renderDragableDiv() {
+        // Toggle feature state
+        switchButton.addEventListener('click', function() {
+            autoScrollEnabled = !autoScrollEnabled;  // Toggle the state
+            this.textContent = `Auto-Scroll: ${autoScrollEnabled ? 'ON' : 'OFF'}`;
+            if (!autoScrollEnabled) {
+                updateSubtitles(-1, contentDiv.getElementsByTagName('div')); // Deselect all
+            }
+            localStorage.setItem("autoScrollEnabled", autoScrollEnabled ? 'true' : 'false');
+        });
+
+        draggableDiv.appendChild(switchButton);
+    }
+
+    function renderDraggableDiv() {
         // Load jQuery UI CSS
         const cssLink = document.createElement('link');
         cssLink.rel = 'stylesheet';
@@ -170,8 +194,6 @@
         $(document).ready(function () {
             // Get initial position and size from localStorage
             const initialPositionAndSize = getPositionAndSize();
-
-
             // Create draggable and resizable window elements
             draggableDiv = document.createElement('div');
             draggableDiv.id = 'draggableSubtitles';
@@ -196,11 +218,10 @@
                 backgroundColor: '#ccc',
                 padding: '10px',
                 textAlign: 'center',
-                fontWeight: 'bold'
+                fontWeight: 'bold',
+                fontSize: '14px'
             });
             headerDiv.textContent = 'Drag me';
-
-
             contentDiv.className = 'content';
             contentDiv.style.padding = '10px';
 
@@ -209,13 +230,14 @@
                 overflow: 'auto',
                 position: 'absolute',
                 width: '95%',
-                height: '90%',
+                height: '85%',
             });
+
             // Assemble the draggable and resizable window
             windowDiv.appendChild(contentDiv);
-
             draggableDiv.appendChild(headerDiv);
             draggableDiv.appendChild(windowDiv);
+            createSwitchButton();
 
             // Append the draggable and resizable window to the body
             document.body.appendChild(draggableDiv);
@@ -318,7 +340,7 @@
     };
 
     function main() {
-        renderDragableDiv();
+        renderDraggableDiv();
         //handle youtube page changed event
         document.addEventListener('fullscreenchange', logFullscreenState);
         document.addEventListener('yt-page-data-updated', onPageChanged);
