@@ -149,8 +149,8 @@
         switchButton.textContent = `Auto-Scroll: ${autoScrollEnabled ? 'ON' : 'OFF'}`;
         switchButton.id = 'toggleAutoScroll';
         switchButton.style.position = 'absolute';
-        switchButton.style.bottom = '10px';
-        switchButton.style.left = '10px';
+        switchButton.style.top = '-31px';
+        switchButton.style.left = '-2px';
         switchButton.style.padding = '5px 10px';
         switchButton.style.cursor = 'pointer';
 
@@ -236,8 +236,8 @@
             // Assemble the draggable and resizable window
             windowDiv.appendChild(contentDiv);
             draggableDiv.appendChild(headerDiv);
-            draggableDiv.appendChild(windowDiv);
             createSwitchButton();
+            draggableDiv.appendChild(windowDiv);
 
             // Append the draggable and resizable window to the body
             document.body.appendChild(draggableDiv);
