@@ -175,7 +175,7 @@
         switchButton.style.cursor = 'pointer';
 
         // Toggle feature state
-        switchButton.addEventListener('click', function() {
+        switchButton.addEventListener('click', function () {
             autoScrollEnabled = !autoScrollEnabled;  // Toggle the state
             this.textContent = `Auto-Scroll: ${autoScrollEnabled ? 'ON' : 'OFF'}`;
             if (!autoScrollEnabled) {
