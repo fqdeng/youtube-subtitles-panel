@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Youtube subtitles
 // @namespace    http://fqdeng.com
-// @version      1.0.3
+// @version      1.0.4
 // @description  show the subtitels like lyrics plane
 // @author       fqdeng
 // @match        https://www.youtube.com/*
