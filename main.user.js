@@ -24,6 +24,23 @@
     const item = localStorage.getItem("autoScrollEnabled");
     let autoScrollEnabled = !item || item === 'true'; // Initialize auto-scroll as enabled
 
+
+    // Function to save position and size to localStorage
+    function savePositionAndSize(left, top, width, height) {
+        localStorage.setItem('draggableSubtitlesPosition', JSON.stringify({left, top, width, height}));
+    }
+
+    // Function to get position and size from localStorage
+    function getPositionAndSize() {
+        const savedPosition = localStorage.getItem('draggableSubtitlesPosition');
+        return savedPosition ? JSON.parse(savedPosition) : {
+            left: '859px',
+            top: '83px',
+            width: '384.891px',
+            height: '436px'
+        };
+    }
+
     function getVideoIdFromUrl() {
         const urlParams = new URLSearchParams(window.location.search);
         return urlParams.get('v');
@@ -81,12 +98,15 @@
     }
 
     function updateSubtitles(activeIndex, subtitles) {
+        const positionAndSize = getPositionAndSize();
         for (let i = 0; i < subtitles.length; i++) {
+            const element = subtitles[i]
             if (i === activeIndex) {
-                subtitles[i].style.backgroundColor = 'orange';
-                subtitles[i].scrollIntoView({behavior: 'smooth', block: 'center'});
+                element.style.backgroundColor = 'orange';
+                // subtitles[i].scrollIntoView({behavior: 'smooth', block: 'center'});
+                element.parentNode.parentNode.scrollTop = element.offsetTop - (parseInt(positionAndSize.height) / 2);
             } else {
-                subtitles[i].style.backgroundColor = '';
+                element.style.backgroundColor = '';
             }
         }
     }
@@ -174,21 +194,6 @@
         cssLink.href = 'https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css';
         document.head.appendChild(cssLink);
 
-        // Function to save position and size to localStorage
-        function savePositionAndSize(left, top, width, height) {
-            localStorage.setItem('draggableSubtitlesPosition', JSON.stringify({left, top, width, height}));
-        }
-
-        // Function to get position and size from localStorage
-        function getPositionAndSize() {
-            const savedPosition = localStorage.getItem('draggableSubtitlesPosition');
-            return savedPosition ? JSON.parse(savedPosition) : {
-                left: '859px',
-                top: '83px',
-                width: '384.891px',
-                height: '436px'
-            };
-        }
 
         // Wait for the document to be ready
         $(document).ready(function () {
