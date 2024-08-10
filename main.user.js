@@ -346,7 +346,7 @@
 
     function main() {
         renderDraggableDiv();
-        //handle youtube page changed event
+        //handle YouTube page changed event
         document.addEventListener('fullscreenchange', logFullscreenState);
         document.addEventListener('yt-page-data-updated', onPageChanged);
         setupVideoPlayerListener();
