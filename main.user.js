@@ -73,36 +73,15 @@
     }
 
     function updateSubtitleScroll(videoTime) {
+        const positionAndSize = getPositionAndSize();
         const subtitles = contentDiv.getElementsByTagName('div');
-
-        let left = 0;
-        let right = subtitles.length - 1;
-        let activeIndex = -1; // initlize it
-
-        while (left <= right) {
-            const mid = Math.floor((left + right) / 2);
-            const subtitleData = subtitles[mid].dataset;
+        for (let i = 0; i < subtitles.length; i++) {
+            const subtitle = subtitles[i];
+            const subtitleData = subtitle.dataset;
             const start = parseFloat(subtitleData.start);
             const duration = parseFloat(subtitleData.dur);
-            const end = start + duration;
-
-            if (start > videoTime) {
-                right = mid - 1;
-            } else if (end <= videoTime) {
-                left = mid + 1;
-            } else {
-                activeIndex = mid; // Find active subtitle
-                break;
-            }
-        }
-        updateSubtitles(activeIndex, subtitles);
-    }
-
-    function updateSubtitles(activeIndex, subtitles) {
-        const positionAndSize = getPositionAndSize();
-        for (let i = 0; i < subtitles.length; i++) {
             const element = subtitles[i]
-            if (i === activeIndex) {
+            if (videoTime >= start && videoTime <= start + duration) {
                 element.style.backgroundColor = 'orange';
                 // subtitles[i].scrollIntoView({behavior: 'smooth', block: 'center'});
                 element.parentNode.parentNode.scrollTop = element.offsetTop - (parseInt(positionAndSize.height) / 3);
@@ -112,7 +91,7 @@
         }
     }
 
-    var previousCurrentTime = null;
+    let previousCurrentTime = null;
 
     function setupVideoPlayerListener() {
         setInterval(() => {
@@ -128,7 +107,7 @@
                     }
                 }
             }
-        }, 1000); // Update every second
+        }, 500); // Update every half second
     }
 
 
