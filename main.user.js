@@ -317,20 +317,32 @@
             // Get subtitle tracks
             const captionTracks = playerResponse.captions?.playerCaptionsTracklistRenderer?.captionTracks;
 
-            if (!captionTracks || captionTracks.length === 0) {
-                console.error('No subtitles found for this video');
-                return;
-            }
-
             select.selectmenu({
                 select: function (event, ui) {
+                    if (ui.item?.value === -1) {
+                        return;
+                    }
                     loadSubtitles(ui.item?.value);
                 }
             });
 
+            if (!captionTracks || captionTracks.length === 0) {
+                select.empty();
+                const option = $("<option>", {
+                    text: "No subtitles",
+                    value: -1
+                });
+                select.append(option);
+                select.selectmenu('refresh');
+                console.error('No subtitles found for this video');
+                return;
+            }
+
+
             // Fetch subtitles for the first track
             let subtitleTrackUrl = captionTracks[0].baseUrl;
             if (trackerIdx !== null) {
+
                 subtitleTrackUrl = captionTracks[trackerIdx].baseUrl;
             } else {
                 select.empty();
