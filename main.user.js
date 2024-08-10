@@ -22,6 +22,7 @@
     let windowDiv = null;
     const textArea = document.createElement('textarea');
     const item = localStorage.getItem("autoScrollEnabled");
+    let select = null;
     let autoScrollEnabled = !item || item === 'true'; // Initialize auto-scroll as enabled
 
 
@@ -63,7 +64,7 @@
                 $(draggableDiv).show()
             }
         }
-        loadSubtitles();
+        loadSubtitles(null);
     }
 
     function decodeHtmlEntities(text) {
@@ -131,12 +132,12 @@
     }
 
 
-    function loadSubtitles() {
+    function loadSubtitles(trackerIdx) {
         // Clear existing subtitles
-        contentDiv.innerHTML = ''; // Or use the loop method if preferred
+        $(contentDiv).empty(); // Or use the loop method if preferred
 
         // Load and display subtitles
-        renderSubtitles(getVideoIdFromUrl()).then(subtitles => {
+        renderSubtitles(getVideoIdFromUrl(), trackerIdx).then(subtitles => {
             if (subtitles) {
                 for (let i = 0; i < subtitles.length; i++) {
                     const subtitle = subtitles[i];
@@ -169,7 +170,7 @@
         switchButton.textContent = `Auto-Scroll: ${autoScrollEnabled ? 'ON' : 'OFF'}`;
         switchButton.id = 'toggleAutoScroll';
         switchButton.style.position = 'absolute';
-        switchButton.style.top = '-31px';
+        switchButton.style.bottom = '-32px';
         switchButton.style.left = '-2px';
         switchButton.style.padding = '5px 10px';
         switchButton.style.cursor = 'pointer';
@@ -186,6 +187,7 @@
 
         draggableDiv.appendChild(switchButton);
     }
+
 
     function renderDraggableDiv() {
         // Load jQuery UI CSS
@@ -244,6 +246,21 @@
             createSwitchButton();
             draggableDiv.appendChild(windowDiv);
 
+            const selectContainer = $(`<div id="select-container"></div>`)
+            select = $(`<select id="videoTrackerSelect">
+                <option>Select a video tracker</option>
+                </select>`)
+            selectContainer
+                .css('position', 'absolute')
+                .css('bottom', '-34px')
+                .css('right', '-12px')
+                .css('padding', '5px 10px')
+                .css('z-index', 10000)
+
+            selectContainer.append(select)
+            $(draggableDiv).append(selectContainer);
+
+
             // Append the draggable and resizable window to the body
             document.body.appendChild(draggableDiv);
 
@@ -269,13 +286,12 @@
                     savePositionAndSize(left, top, width, height);
                 }
             });
-
-
         });
     }
 
+
     // Function to load subtitles
-    async function renderSubtitles(videoId) {
+    async function renderSubtitles(videoId, trackerIdx) {
         try {
 
             if (!videoId) {
@@ -306,8 +322,28 @@
                 return;
             }
 
+            select.selectmenu({
+                select: function (event, ui) {
+                    loadSubtitles(ui.item?.value);
+                }
+            });
+
             // Fetch subtitles for the first track
-            const subtitleTrackUrl = captionTracks[0].baseUrl;
+            let subtitleTrackUrl = captionTracks[0].baseUrl;
+            if (trackerIdx !== null) {
+                subtitleTrackUrl = captionTracks[trackerIdx].baseUrl;
+            } else {
+                select.empty();
+                for (let i = 0; i < captionTracks.length; i++) {
+                    const option = $("<option>", {
+                        text: captionTracks[i].name.simpleText,
+                        value: i
+                    });
+                    select.append(option);
+                    select.selectmenu('refresh');
+                }
+            }
+
             const subtitlesResponse = await fetch(subtitleTrackUrl);
             const subtitlesXml = await subtitlesResponse.text();
 
@@ -343,6 +379,7 @@
             $(draggableDiv).show()
         }
     };
+
 
     function main() {
         renderDraggableDiv();
