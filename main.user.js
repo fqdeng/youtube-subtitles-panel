@@ -228,7 +228,7 @@
                 fontWeight: 'bold',
                 fontSize: '14px'
             });
-            headerDiv.textContent = 'Drag me';
+            headerDiv.textContent = 'Drag me to change the position';
             contentDiv.className = 'content';
             contentDiv.style.padding = '10px';
 
