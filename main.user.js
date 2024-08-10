@@ -104,7 +104,7 @@
             if (i === activeIndex) {
                 element.style.backgroundColor = 'orange';
                 // subtitles[i].scrollIntoView({behavior: 'smooth', block: 'center'});
-                element.parentNode.parentNode.scrollTop = element.offsetTop - (parseInt(positionAndSize.height) / 2);
+                element.parentNode.parentNode.scrollTop = element.offsetTop - (parseInt(positionAndSize.height) / 3);
             } else {
                 element.style.backgroundColor = '';
             }
