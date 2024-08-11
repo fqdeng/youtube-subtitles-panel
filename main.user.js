@@ -129,14 +129,23 @@
                     subtitleDiv.dataset.start = subtitle.start;
                     subtitleDiv.dataset.dur = subtitle.dur;
                     subtitleDiv.dataset.idx = i;
+
+                    //Prevent double click to select text
+                    subtitleDiv.addEventListener('mousedown', function(e){
+                        if (e.detail > 1){
+                            e.preventDefault();
+                        }
+                    });
+
                     // Add click event listener to set video currentTime
-                    $(subtitleDiv).on("dblclick", function () {
+                    $(subtitleDiv).on("dblclick", function (event) {
+                        if (event.detail > 1) {
+                            event.preventDefault();
+                        }
                         const video = document.getElementsByTagName("video")[0];
                         if (video) {
                             video.currentTime = parseFloat(this.dataset.start);
                         }
-                        const subtitles = contentDiv.getElementsByTagName('div');
-                        updateSubtitles(this.dataset.idx, subtitles)
                     });
                     contentDiv.appendChild(subtitleDiv);
                 }
@@ -158,9 +167,6 @@
         switchButton.addEventListener('click', function () {
             autoScrollEnabled = !autoScrollEnabled;  // Toggle the state
             this.textContent = `Auto-Scroll: ${autoScrollEnabled ? 'ON' : 'OFF'}`;
-            if (!autoScrollEnabled) {
-                updateSubtitles(-1, contentDiv.getElementsByTagName('div')); // Deselect all
-            }
             localStorage.setItem("autoScrollEnabled", autoScrollEnabled ? 'true' : 'false');
         });
 
