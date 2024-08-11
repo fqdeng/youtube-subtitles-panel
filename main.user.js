@@ -60,7 +60,7 @@
                 $(draggableDiv).hide()
             }
         } else {
-            if (draggableDiv) {
+            if (draggableDiv && !document.fullscreenElement) {
                 $(draggableDiv).show()
             }
         }
