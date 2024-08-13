@@ -10,6 +10,7 @@
 // @run-at document-start
 // @require      https://cdn.jsdelivr.net/gh/fqdeng/youtube-subtitles-panel@master/jquery.min.fixed.js
 // @require      https://cdn.jsdelivr.net/npm/jquery-ui@1.14.0/dist/jquery-ui.min.js
+// @require      https://cdn.jsdelivr.net/npm/notify-js-legacy@0.4.1/notify.min.js
 // @updateURL    https://raw.githubusercontent.com/fqdeng/youtube-subtitles-panel/master/main.user.js
 // @downloadURL  https://raw.githubusercontent.com/fqdeng/youtube-subtitles-panel/master/main.user.js
 // @license MIT
@@ -300,6 +301,13 @@
     };
 
     function createWindowDiv() {
+
+        $.notify("Initialize..", {
+            className: 'success',
+            autoHideDelay: 3000,
+            position : "right bottom",
+        });
+
         // Get initial position and size from localStorage
         const initialPositionAndSize = getPositionAndSize();
         // Create draggable and resizable window elements
@@ -361,7 +369,6 @@
         selectContainer.append(select)
         $(draggableDiv).append(selectContainer);
 
-
         // Append the draggable and resizable window to the body
         document.body.appendChild(draggableDiv);
 
@@ -387,6 +394,7 @@
                 savePositionAndSize(left, top, width, height);
             }
         });
+
     }
 
     function main() {
