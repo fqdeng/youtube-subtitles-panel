@@ -75,6 +75,8 @@
     function updateSubtitleScroll(videoTime) {
         const positionAndSize = getPositionAndSize();
         const subtitles = contentDiv.getElementsByTagName('div');
+        let position = -1;
+
         for (let i = 0; i < subtitles.length; i++) {
             const subtitle = subtitles[i];
             const subtitleData = subtitle.dataset;
@@ -82,13 +84,22 @@
             const duration = parseFloat(subtitleData.dur);
             const element = subtitles[i]
             if (videoTime >= start && videoTime <= start + duration) {
-                element.style.backgroundColor = 'orange';
-                // subtitles[i].scrollIntoView({behavior: 'smooth', block: 'center'});
-                element.parentNode.parentNode.scrollTop = element.offsetTop - (parseInt(positionAndSize.height) / 3);
-            } else {
-                element.style.backgroundColor = '';
+                position = i;
+                break;
             }
         }
+
+        if (position > 0){
+            for (let i = 0; i < subtitles.length; i++) {
+                let element = subtitles[i]
+                element.style.backgroundColor = '';
+            }
+            let element = subtitles[position]
+            element.style.backgroundColor = 'orange';
+            // subtitles[i].scrollIntoView({behavior: 'smooth', block: 'center'});
+            element.parentNode.parentNode.scrollTop = element.offsetTop - (parseInt(positionAndSize.height) / 3);
+        }
+
     }
 
     let previousCurrentTime = null;
