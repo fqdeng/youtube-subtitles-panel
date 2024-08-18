@@ -2,7 +2,7 @@
 // @name         Youtube subtitles
 // @namespace    http://fqdeng.com
 // @version      1.0.4
-// @description  show the subtitels like lyrics plane
+// @description  show the subtitles like lyrics panel on YouTube video page, and save the words or phrases to the server
 // @author       fqdeng
 // @match        https://www.youtube.com/*
 // @match        https://youtube.com/*
