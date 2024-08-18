@@ -326,14 +326,14 @@
 
     function loadCss() {
         // Load jQuery UI CSS and other components' CSS file
-        insertCssLink('https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css')
-        insertCssLink('https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.contextMenu.min.css');
-        insertCssLink('https://cdn.jsdelivr.net/npm/notify-js-legacy@0.4.1/notify.min.css');
-        insertCssLink('https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css')
-        insertCssLink('https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css')
+        loadCssFromURL('https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css')
+        loadCssFromURL('https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.contextMenu.min.css');
+        loadCssFromURL('https://cdn.jsdelivr.net/npm/notify-js-legacy@0.4.1/notify.min.css');
+        loadCssFromURL('https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css')
+        loadCssFromURL('https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css')
     }
 
-    function insertCssLink(url) {
+    function loadCssFromURL(url) {
         const cssLink = document.createElement('link');
         cssLink.rel = 'stylesheet';
         cssLink.href = url;
