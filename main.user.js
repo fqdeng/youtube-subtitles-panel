@@ -11,12 +11,33 @@
 // @require      https://cdn.jsdelivr.net/gh/fqdeng/youtube-subtitles-panel@master/jquery.min.fixed.js
 // @require      https://cdn.jsdelivr.net/npm/jquery-ui@1.14.0/dist/jquery-ui.min.js
 // @require      https://cdn.jsdelivr.net/npm/notify-js-legacy@0.4.1/notify.min.js
+// @require      https://cdn.jsdelivr.net/npm/jquery-contextmenu@2.7.1/dist/jquery.contextMenu.min.js
+// @require      https://cdn.jsdelivr.net/npm/jquery-contextmenu@2.7.1/dist/jquery.ui.position.min.js
+// @require      https://cdn.jsdelivr.net/npm/jquery-modal@0.9.1/jquery.modal.min.js
+// @grant        GM_addStyle
 // @updateURL    https://raw.githubusercontent.com/fqdeng/youtube-subtitles-panel/master/main.user.js
 // @downloadURL  https://raw.githubusercontent.com/fqdeng/youtube-subtitles-panel/master/main.user.js
 // @license MIT
 // ==/UserScript==
 
 (function () {
+    GM_addStyle(`
+        /* Custom CSS for the menu item */
+        .context-menu-item {
+            font-size: 14px; /* Adjust this value to increase font size */
+        }
+        .context-menu-item > span {
+            padding: 10px; /* Optional: adjust padding as needed */
+        }
+        
+        /* Custom z-index for the modal overlay */
+        .jquery-modal.blocker {
+            z-index: 10001 !important;
+        }
+        .jquery-modal {
+            z-index: 10002 !important;
+        }
+    `);
     'use strict';
     let draggableDiv = null;
     let contentDiv = document.createElement('div');
@@ -123,6 +144,113 @@
     }
 
 
+    // Function to get the selected text and its containing element
+    function getSelectedTextAndElement() {
+        // Get the current selection
+        let selection = window.getSelection();
+
+        // If there's no selection, return null
+        if (!selection.rangeCount) {
+            return null;
+        }
+
+        // Get the range object that contains the selected text
+        let range = selection.getRangeAt(0);
+
+        // Extract the selected text
+        let selectedText = selection.toString();
+
+        // Find the common ancestor container of the selected text
+        let containingElement = range.startContainer.parentElement;
+
+        console.log("containingElement: ", containingElement)
+
+        // If the selected text is within a text node, move to its parent element
+        if (containingElement.nodeType === Node.TEXT_NODE) {
+            containingElement = containingElement.parentNode;
+        }
+
+        // Return both the selected text and the containing element
+        return {
+            text: selectedText,
+            element: containingElement
+        };
+    }
+
+    // Function to pause the YouTube video on YouTube.com
+    function pauseYouTubeVideo() {
+        const video = document.querySelector('video');
+        if (video && !video.paused) {
+            video.pause();
+            console.log("YouTube video paused.");
+        }
+    }
+
+    // Function to start the YouTube video on YouTube.com
+    function getCurrentVideoState() {
+        const video = document.querySelector('video');
+        if (video) {
+            if (video.paused) {
+                return "paused"
+            }
+        }
+        return "playing"
+    }
+
+    // Function to start the YouTube video on YouTube.com
+    function startYouTubeVideo() {
+        const video = document.querySelector('video');
+        if (video && video.paused) {
+            video.play();
+            console.log("YouTube video started.");
+        }
+    }
+
+    function openModalDialog(text) {
+        // Create a div element for the modal
+        $("#modal").remove();
+        $("body").append(`<div id="modal" class="modal" style="min-height: 100px; z-index: 10001; font-size: 16px" >${text}</div>`);
+        $("#modal").modal({
+            fadeDuration: 100
+        })
+            .on($.modal.BEFORE_OPEN, function (event, modal) {
+                console.log("Modal is now visible");
+                //add state to modal, it's a trick to save the video state
+                modal.options.pause = getCurrentVideoState();
+                pauseYouTubeVideo();
+            })
+            .on($.modal.CLOSE, function (event, modal) {
+                console.log("Modal has completely closed");
+                if (modal.options.pause === "playing") {
+                    startYouTubeVideo();
+                }
+            });
+    }
+
+    function loadContextMenuForSubtitles() {
+        $.contextMenu({
+            selector: '#draggableSubtitles',
+            callback: function (key, options) {
+                const m = "clicked: " + key;
+                let selectedTextAndElement = getSelectedTextAndElement();
+                const log = 'Selected text:' + selectedTextAndElement.text;
+                console.log(log, selectedTextAndElement.element, this);
+                openModalDialog(selectedTextAndElement.text);
+            },
+            items: {
+                "save": {
+                    name: "Save", icon: function () {
+                        return 'bi bi-save';
+                    }
+                },
+            },
+            events: {
+
+            }
+        });
+    }
+
+
     function loadSubtitles(trackerIdx) {
         // Clear existing subtitles
         $(contentDiv).empty(); // Or use the loop method if preferred
@@ -141,6 +269,7 @@
                     subtitleDiv.dataset.start = subtitle.start;
                     subtitleDiv.dataset.dur = subtitle.dur;
                     subtitleDiv.dataset.idx = i;
+                    subtitleDiv.className = 'subtitle';
 
                     //Prevent double click to select text
                     subtitleDiv.addEventListener('mousedown', function (e) {
@@ -161,6 +290,7 @@
                     });
                     contentDiv.appendChild(subtitleDiv);
                 }
+                loadContextMenuForSubtitles();
             }
         });
     }
@@ -187,13 +317,20 @@
 
 
     function loadCss() {
-        // Load jQuery UI CSS
-        const cssLink = document.createElement('link');
-        cssLink.rel = 'stylesheet';
-        cssLink.href = 'https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css';
-        document.head.appendChild(cssLink);
+        // Load jQuery UI CSS and other components' CSS file
+        insertCssLink('https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css')
+        insertCssLink('https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.contextMenu.min.css');
+        insertCssLink('https://cdn.jsdelivr.net/npm/notify-js-legacy@0.4.1/notify.min.css');
+        insertCssLink('https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css')
+        insertCssLink('https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css')
     }
 
+    function insertCssLink(url) {
+        const cssLink = document.createElement('link');
+        cssLink.rel = 'stylesheet';
+        cssLink.href = url;
+        document.head.appendChild(cssLink);
+    }
 
     async function renderTrackerSelect(captionTracks) {
         select.selectmenu({
@@ -238,6 +375,7 @@
         // Get subtitle tracks
         const captionTracks = playerResponse.captions?.playerCaptionsTracklistRenderer?.captionTracks;
         await renderTrackerSelect(captionTracks)
+        console.log(captionTracks)
 
         // Fetch subtitles for the first track
         let subtitleTrackUrl = captionTracks[0].baseUrl;
@@ -305,7 +443,7 @@
         $.notify("Initialize..", {
             className: 'success',
             autoHideDelay: 3000,
-            position : "right bottom",
+            position: "right bottom",
         });
 
         // Get initial position and size from localStorage
