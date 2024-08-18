@@ -15,6 +15,7 @@
 // @require      https://cdn.jsdelivr.net/npm/jquery-contextmenu@2.7.1/dist/jquery.ui.position.min.js
 // @require      https://cdn.jsdelivr.net/npm/jquery-modal@0.9.1/jquery.modal.min.js
 // @grant        GM_addStyle
+// @grant        GM_registerMenuCommand
 // @updateURL    https://raw.githubusercontent.com/fqdeng/youtube-subtitles-panel/master/main.user.js
 // @downloadURL  https://raw.githubusercontent.com/fqdeng/youtube-subtitles-panel/master/main.user.js
 // @license MIT
@@ -23,6 +24,9 @@
 (function () {
 
     'use strict';
+    GM_registerMenuCommand("configs", function () {
+        openTokenSettingsDialog();
+    });
     let draggableDiv = null;
     let contentDiv = document.createElement('div');
     let windowDiv = null;
@@ -190,7 +194,8 @@
         }
     }
 
-    function createDialog(start, chosenText) {
+    function createSaveWordsDialog(start, chosenText) {
+        $("#modal").remove();
         console.log("chosen text video start: ", start);
 
         GM_addStyle(` 
@@ -248,25 +253,25 @@
             background-color: #4caf50; 
             color: white;
         }
-    `);
+        `);
 
         $("body").append(`
-        <div id="modal" class="modal" style="min-height: 100px; z-index: 10001;">
-            <h1>Click word below to select the keyword and hashtag</h1>
-            <p id="chosenText" style="font-size: 16px; margin-top:20px"></p>
-            <div id="hashtagSection" style="font-size: 14px; margin-top:20px;"> 
-                <h2 style="padding-bottom: 10px">Hashtag:</h2>
-                <label class="hashtag-label" for="hashtag1">#hashtag1<input type="checkbox" name="hashtag" value="#hashtag1" id="hashtag1"></label>
-                <label class="hashtag-label" for="hashtag2">#hashtag2<input type="checkbox" name="hashtag" value="#hashtag2" id="hashtag2"></label>
-                <label class="hashtag-label" for="hashtag3">#hashtag3<input type="checkbox" name="hashtag" value="#hashtag3" id="hashtag3"></label>
+            <div id="modal" class="modal" style="min-height: 100px; z-index: 10001;">
+                <h1>Click word below to select the keyword and hashtag</h1>
+                <p id="chosenText" style="font-size: 16px; margin-top:20px"></p>
+                <div id="hashtagSection" style="font-size: 14px; margin-top:20px;"> 
+                    <h2 style="padding-bottom: 10px">Hashtag:</h2>
+                    <label class="hashtag-label" for="hashtag1">#hashtag1<input type="checkbox" name="hashtag" value="#hashtag1" id="hashtag1"></label>
+                    <label class="hashtag-label" for="hashtag2">#hashtag2<input type="checkbox" name="hashtag" value="#hashtag2" id="hashtag2"></label>
+                    <label class="hashtag-label" for="hashtag3">#hashtag3<input type="checkbox" name="hashtag" value="#hashtag3" id="hashtag3"></label>
+                </div>
+                <div style="margin-top:20px; font-size: 14px">
+                    <h2>Keyword:</h2>
+                    <div id="keywordLine"></div>
+                 </div>
+                <div style="font-size: 14px; margin-top:20px; display: flex; justify-content: flex-end;"><button id="saveAll">Save</button></div>
             </div>
-            <div style="margin-top:20px; font-size: 14px">
-                <h2>Keyword:</h2>
-                <div id="keywordLine"></div>
-             </div>
-            <div style="font-size: 14px; margin-top:20px; display: flex; justify-content: flex-end;"><button id="saveAll">Save</button></div>
-        </div>
-    `);
+        `);
 
         function extractWord(text) {
             return text.match(/[\w'-]+/)[0];
@@ -294,7 +299,7 @@
             $(this).parent(".keyword").remove();
         });
 
-        $(".hashtag-label").on("click", function() {
+        $(".hashtag-label").on("click", function () {
             const checkbox = $(this).find('input[type="checkbox"]');
             const isChecked = checkbox.is(':checked');
 
@@ -334,11 +339,67 @@
         );
     }
 
-
-    function openModalDialog(start, chosenText) {
-        // Create a div element for the modal
+    function createTokenSettingsDialog() {
         $("#modal").remove();
-        createDialog(start, chosenText);
+        GM_addStyle(` 
+            .jquery-modal.blocker {
+                z-index: 10001 !important;
+            }
+            .jquery-modal {
+                z-index: 10002 !important;
+            }
+            #modal {
+                user-select: none;
+            }
+            #head {
+              padding: 10px;
+              border-bottom: 1px dashed #ccc; 
+            }
+        `);
+        $("body").append(`
+            <div id="modal" class="modal" style="min-height: 100px; z-index: 10002;">
+                <h1 id="head">Settings</h1>
+                <div style="margin-top:20px; font-size: 14px">
+                    <h3 style="display: inline-block; margin-left: 10px" >Token:</h3>
+                    <input id="token" style="min-width: 300px; display: inline-block;">
+                </div>
+                <div style="font-size: 14px; margin-top:20px; display: flex; justify-content: flex-end;">
+                    <button id="saveSettings">Save</button>
+                </div>
+            </div>
+        `);
+
+        const key = localStorage.getItem("apiToken");
+        if (key){
+            $('#token').val(key);
+        }
+
+        $("#saveSettings").on("click", function () {
+            const token = $("#token").val();
+            if (token.length === 0 || token.length > 36) {
+                $.notify("Invalid token", {
+                    className: 'error',
+                    autoHideDelay: 3000,
+                    position: "right bottom",
+                });
+                return;
+            }
+            localStorage.setItem("apiToken", token);
+            $.notify("Settings saved", {
+                className: 'success',
+                autoHideDelay: 3000,
+                position: "right bottom",
+            });
+            $.modal.close();
+        });
+    }
+
+    function openTokenSettingsDialog() {
+        createTokenSettingsDialog();
+        modalMonitor();
+    }
+
+    function modalMonitor() {
         $("#modal").modal({
             fadeDuration: 100
         })
@@ -354,6 +415,11 @@
                     startYouTubeVideo();
                 }
             });
+    }
+
+    function openModalDialog(start, chosenText) {
+        createSaveWordsDialog(start, chosenText);
+        modalMonitor();
     }
 
     function loadContextMenuForSubtitles() {
