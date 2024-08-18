@@ -261,7 +261,7 @@
 
         $("body").append(`
             <div id="modal" class="modal" style="min-height: 100px; z-index: 10001;">
-                <h1>Double-click the word below to select the keyword</h1>
+                <h1>Double-click or right-click the texts below to choose the phrase or word</h1>
                 <p id="chosenText" style="font-size: 16px; margin-top:20px"></p>
                 <div id="hashtagSection" style="font-size: 14px; margin-top:20px; "> 
                     <h2 style="padding-bottom: 10px">Hashtag:</h2>
