@@ -239,11 +239,12 @@
                 const m = "clicked: " + key;
                 let selectedTextAndElement = getSelectedTextAndElement();
                 const log = 'Selected text:' + selectedTextAndElement.text;
+                const start = selectedTextAndElement.element?.dataset.start;
                 console.log(log, selectedTextAndElement.element, this);
                 if (selectedTextAndElement.text) {
-                    openModalDialog(selectedTextAndElement.dataset.start, selectedTextAndElement.text);
+                    openModalDialog(start, selectedTextAndElement.text);
                 } else {
-                    openModalDialog(selectedTextAndElement.dataset.start, selectedTextAndElement.element.textContent);
+                    openModalDialog(start, selectedTextAndElement.element.textContent);
                 }
             },
             items: {
