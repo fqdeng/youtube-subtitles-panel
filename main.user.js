@@ -232,6 +232,22 @@
             border-bottom: 1px dashed #ccc;
             padding-bottom: 20px;
         }
+        input[type="checkbox"][name="hashtag"] {
+            display: none;
+        }
+        .hashtag-label {
+            display: inline-block;
+            padding: 5px 10px;
+            margin-right: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #f0f0f0;
+        }
+        .hashtag-label.selected {
+            background-color: #4caf50; 
+            color: white;
+        }
     `);
 
         $("body").append(`
@@ -240,9 +256,9 @@
             <p id="chosenText" style="font-size: 16px; margin-top:20px"></p>
             <div id="hashtagSection" style="font-size: 14px; margin-top:20px;"> 
                 <h2 style="padding-bottom: 10px">Hashtag:</h2>
-                <label><input type="checkbox" name="hashtag" value="#hashtag1">#hashtag1</label>
-                <label><input type="checkbox" name="hashtag" value="#hashtag2">#hashtag2</label>
-                <label><input type="checkbox" name="hashtag" value="#hashtag3">#hashtag3</label>
+                <label class="hashtag-label" for="hashtag1">#hashtag1<input type="checkbox" name="hashtag" value="#hashtag1" id="hashtag1"></label>
+                <label class="hashtag-label" for="hashtag2">#hashtag2<input type="checkbox" name="hashtag" value="#hashtag2" id="hashtag2"></label>
+                <label class="hashtag-label" for="hashtag3">#hashtag3<input type="checkbox" name="hashtag" value="#hashtag3" id="hashtag3"></label>
             </div>
             <div style="margin-top:20px; font-size: 14px">
                 <h2>Keyword:</h2>
@@ -276,6 +292,19 @@
 
         $("#keywordLine").on("click", ".removeKeyword", function () {
             $(this).parent(".keyword").remove();
+        });
+
+        $(".hashtag-label").on("click", function() {
+            const checkbox = $(this).find('input[type="checkbox"]');
+            const isChecked = checkbox.is(':checked');
+
+            if (isChecked) {
+                checkbox.prop('checked', false);
+                $(this).removeClass('selected');
+            } else {
+                checkbox.prop('checked', true);
+                $(this).addClass('selected');
+            }
         });
 
         $("#saveAll").on("click", function () {
