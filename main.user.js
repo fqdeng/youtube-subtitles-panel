@@ -21,23 +21,7 @@
 // ==/UserScript==
 
 (function () {
-    GM_addStyle(`
-        /* Custom CSS for the menu item */
-        .context-menu-item {
-            font-size: 14px; /* Adjust this value to increase font size */
-        }
-        .context-menu-item > span {
-            padding: 10px; /* Optional: adjust padding as needed */
-        }
-        
-        /* Custom z-index for the modal overlay */
-        .jquery-modal.blocker {
-            z-index: 10001 !important;
-        }
-        .jquery-modal {
-            z-index: 10002 !important;
-        }
-    `);
+
     'use strict';
     let draggableDiv = null;
     let contentDiv = document.createElement('div');
@@ -207,9 +191,120 @@
     }
 
     function createDialog(start, chosenText) {
-        console.log("chosen text video start: ", start)
-        $("body").append(`<div id="modal" class="modal" style="min-height: 100px; z-index: 10001; font-size: 16px" >${chosenText}</div>`);
+        console.log("chosen text video start: ", start);
+
+        GM_addStyle(` 
+        .jquery-modal.blocker {
+            z-index: 10001 !important;
+        }
+        .jquery-modal {
+            z-index: 10002 !important;
+        }
+        #modal {
+            user-select: none;
+        }
+        #chosenText {
+            border-top: 1px dashed #ccc;
+            border-bottom: 1px dashed #ccc;
+            padding: 10px 0;
+        }
+        .word {
+            cursor: pointer;
+        }
+        #keywordLine {
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            padding: 5px;
+            min-height: 30px;
+            font-size: 16px;
+        }
+        .keyword {
+            display: inline-block;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            padding: 2px 5px;
+            background-color: #ddd;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #hashtagSection{
+            border-bottom: 1px dashed #ccc;
+            padding-bottom: 20px;
+        }
+    `);
+
+        $("body").append(`
+        <div id="modal" class="modal" style="min-height: 100px; z-index: 10001;">
+            <h1>Click word below to select the keyword and hashtag</h1>
+            <p id="chosenText" style="font-size: 16px; margin-top:20px"></p>
+            <div id="hashtagSection" style="font-size: 14px; margin-top:20px;"> 
+                <h2 style="padding-bottom: 10px">Hashtag:</h2>
+                <label><input type="checkbox" name="hashtag" value="#hashtag1">#hashtag1</label>
+                <label><input type="checkbox" name="hashtag" value="#hashtag2">#hashtag2</label>
+                <label><input type="checkbox" name="hashtag" value="#hashtag3">#hashtag3</label>
+            </div>
+            <div style="margin-top:20px; font-size: 14px">
+                <h2>Keyword:</h2>
+                <div id="keywordLine"></div>
+             </div>
+            <div style="font-size: 14px; margin-top:20px; display: flex; justify-content: flex-end;"><button id="saveAll">Save</button></div>
+        </div>
+    `);
+
+        function extractWord(text) {
+            return text.match(/[\w'-]+/)[0];
+        }
+
+        const words = chosenText.split(/[\s\n]+/);
+        words.forEach(word => {
+            $("#chosenText").append(`<span class="word">${word} </span>`);
+        });
+
+        $(".word").on("click", function () {
+            const word = $(this).text().trim();
+            const cleanWord = extractWord(word);
+            const keywordLine = $("#keywordLine");
+            const existingKeyword = keywordLine.find(`.keyword[data-word='${cleanWord}']`);
+
+            if (existingKeyword.length === 0) {
+                keywordLine.append(`<span class="keyword" data-word="${cleanWord}">${cleanWord} <span class="removeKeyword" style="cursor: pointer;">&times;</span></span>`);
+            } else {
+                existingKeyword.remove();
+            }
+        });
+
+        $("#keywordLine").on("click", ".removeKeyword", function () {
+            $(this).parent(".keyword").remove();
+        });
+
+        $("#saveAll").on("click", function () {
+                console.log("button clicked");
+                const keywords = $("#keywordLine .keyword").map(function () {
+                    return $(this).data("word");
+                }).get();
+                const hashtags = $("input[name='hashtag']:checked").map(function () {
+                    return $(this).val();
+                }).get();
+                const data = {
+                    keywords,
+                    hashtags,
+                    start
+                };
+                console.log("Save data: ", data);
+
+                $.notify("Saving..", {
+                    className: 'success',
+                    autoHideDelay: 3000,
+                    position: "right bottom",
+                });
+
+                $.modal.close();
+
+            }
+        );
     }
+
 
     function openModalDialog(start, chosenText) {
         // Create a div element for the modal
@@ -233,6 +328,15 @@
     }
 
     function loadContextMenuForSubtitles() {
+        GM_addStyle(`
+            /* <style> Custom CSS for the menu item */
+            .context-menu-item {
+                font-size: 14px; /* Adjust this value to increase font size */
+            }
+            .context-menu-item > span {
+                padding: 10px; /* Optional: adjust padding as needed */
+            }
+        `);
         $.contextMenu({
             selector: '#draggableSubtitles',
             callback: function (key, options) {
