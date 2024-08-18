@@ -257,7 +257,7 @@
 
         $("body").append(`
             <div id="modal" class="modal" style="min-height: 100px; z-index: 10001;">
-                <h1>Click word below to select the keyword and hashtag</h1>
+                <h1>Click word below to select the keyword</h1>
                 <p id="chosenText" style="font-size: 16px; margin-top:20px"></p>
                 <div id="hashtagSection" style="font-size: 14px; margin-top:20px;"> 
                     <h2 style="padding-bottom: 10px">Hashtag:</h2>
