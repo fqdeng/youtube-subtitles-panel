@@ -199,6 +199,7 @@
         console.log("chosen text video start: ", start);
 
         GM_addStyle(` 
+        /* <style> trick */
         .jquery-modal.blocker {
             z-index: 10001 !important;
         }
@@ -206,7 +207,6 @@
             z-index: 10002 !important;
         }
         #modal {
-            user-select: none;
         }
         #chosenText {
             border-top: 1px dashed #ccc;
@@ -234,6 +234,7 @@
             font-size: 16px;
         }
         #hashtagSection{
+            user-select: none;
             border-bottom: 1px dashed #ccc;
             padding-bottom: 20px;
         }
@@ -253,19 +254,22 @@
             background-color: #4caf50; 
             color: white;
         }
+        #keyword {
+            user-select: none;
+        }
         `);
 
         $("body").append(`
             <div id="modal" class="modal" style="min-height: 100px; z-index: 10001;">
-                <h1>Click word below to select the keyword</h1>
+                <h1>Double-click the word below to select the keyword</h1>
                 <p id="chosenText" style="font-size: 16px; margin-top:20px"></p>
-                <div id="hashtagSection" style="font-size: 14px; margin-top:20px;"> 
+                <div id="hashtagSection" style="font-size: 14px; margin-top:20px; "> 
                     <h2 style="padding-bottom: 10px">Hashtag:</h2>
                     <label class="hashtag-label" for="hashtag1">#hashtag1<input type="checkbox" name="hashtag" value="#hashtag1" id="hashtag1"></label>
                     <label class="hashtag-label" for="hashtag2">#hashtag2<input type="checkbox" name="hashtag" value="#hashtag2" id="hashtag2"></label>
                     <label class="hashtag-label" for="hashtag3">#hashtag3<input type="checkbox" name="hashtag" value="#hashtag3" id="hashtag3"></label>
                 </div>
-                <div style="margin-top:20px; font-size: 14px">
+                <div id="keyword" style="margin-top:20px; font-size: 14px">
                     <h2>Keyword:</h2>
                     <div id="keywordLine"></div>
                  </div>
@@ -282,7 +286,10 @@
             $("#chosenText").append(`<span class="word">${word} </span>`);
         });
 
-        $(".word").on("click", function () {
+        $(".word").on("dblclick", function (event) {
+            if (event.detail > 1) {
+                event.preventDefault();
+            }
             const word = $(this).text().trim();
             const cleanWord = extractWord(word);
             const keywordLine = $("#keywordLine");
@@ -437,11 +444,13 @@
             callback: function (key, options) {
                 const m = "clicked: " + key;
                 let selectedTextAndElement = getSelectedTextAndElement();
-                const log = 'Selected text:' + selectedTextAndElement.text;
+                const text = selectedTextAndElement.text
+                const allContent = selectedTextAndElement.element.textContent + text.replace(/^[\s\S]*?\n/, '').replace(/\n/g, ' ');
+                const log = 'Selected text:' + allContent;
                 const start = selectedTextAndElement.element?.dataset.start;
-                console.log(log, selectedTextAndElement.element, this);
-                if (selectedTextAndElement.text) {
-                    openModalDialog(start, selectedTextAndElement.text);
+
+                if (allContent) {
+                    openModalDialog(start, allContent);
                 } else {
                     openModalDialog(start, selectedTextAndElement.element.textContent);
                 }
