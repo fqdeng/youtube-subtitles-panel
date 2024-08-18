@@ -270,12 +270,29 @@
                     <label class="hashtag-label" for="hashtag3">#hashtag3<input type="checkbox" name="hashtag" value="#hashtag3" id="hashtag3"></label>
                 </div>
                 <div id="keyword" style="margin-top:20px; font-size: 14px">
-                    <h2>Keyword:</h2>
+                    <h2>Word or Phrase:</h2>
                     <div id="keywordLine"></div>
                  </div>
                 <div style="font-size: 14px; margin-top:20px; display: flex; justify-content: flex-end;"><button id="saveAll">Save</button></div>
             </div>
         `);
+
+        $.contextMenu({
+            selector: '#chosenText',
+            callback: function (key, options) {
+                const m = "clicked: " + key;
+                let selectedTextAndElement = getSelectedTextAndElement();
+                const text = selectedTextAndElement.text
+                console.log('Selected text:' + text);
+                modifyKeywords(text);
+            },
+            items: {
+                "save": {
+                    name: "Add", icon: 'add'
+                },
+            },
+            events: {}
+        });
 
         function extractWord(text) {
             return text.match(/[\w'-]+/)[0];
@@ -286,20 +303,26 @@
             $("#chosenText").append(`<span class="word">${word} </span>`);
         });
 
-        $(".word").on("dblclick", function (event) {
-            if (event.detail > 1) {
-                event.preventDefault();
-            }
-            const word = $(this).text().trim();
-            const cleanWord = extractWord(word);
+        function htmlEncode(value) {
+            return $('<div/>').text(value).html();
+        }
+
+        function modifyKeywords(cleanWord) {
             const keywordLine = $("#keywordLine");
-            const existingKeyword = keywordLine.find(`.keyword[data-word='${cleanWord}']`);
+            const existingKeyword = keywordLine.find(`.keyword[data-word='${htmlEncode(cleanWord)}']`);
 
             if (existingKeyword.length === 0) {
-                keywordLine.append(`<span class="keyword" data-word="${cleanWord}">${cleanWord} <span class="removeKeyword" style="cursor: pointer;">&times;</span></span>`);
+                keywordLine.append(`<span class="keyword" data-word="${htmlEncode(cleanWord)}">${cleanWord} <span class="removeKeyword" style="cursor: pointer;">&times;</span></span>`);
             } else {
                 existingKeyword.remove();
             }
+        }
+
+        $(".word").on("dblclick", function (event) {
+            event.preventDefault();
+            const word = $(this).text().trim();
+            const cleanWord = extractWord(word);
+            modifyKeywords(cleanWord);
         });
 
         $("#keywordLine").on("click", ".removeKeyword", function () {
@@ -457,9 +480,7 @@
             },
             items: {
                 "save": {
-                    name: "Save", icon: function () {
-                        return 'bi bi-save';
-                    }
+                    name: "Save", icon: 'edit'
                 },
             },
             events: {}
@@ -537,8 +558,7 @@
         loadCssFromURL('https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css')
         loadCssFromURL('https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.contextMenu.min.css');
         loadCssFromURL('https://cdn.jsdelivr.net/npm/notify-js-legacy@0.4.1/notify.min.css');
-        loadCssFromURL('https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css')
-        loadCssFromURL('https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css')
+        loadCssFromURL('https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css');
     }
 
     function loadCssFromURL(url) {
