@@ -284,6 +284,9 @@
                 let selectedTextAndElement = getSelectedTextAndElement();
                 const text = selectedTextAndElement.text
                 console.log('Selected text:' + text);
+                if (!text || text.trim().length === 0){
+                    return
+                }
                 modifyKeywords(text);
             },
             items: {
@@ -517,9 +520,6 @@
 
                     // Add click event listener to set video currentTime
                     $(subtitleDiv).on("dblclick", function (event) {
-                        if (event.detail > 1) {
-                            event.preventDefault();
-                        }
                         const video = document.getElementsByTagName("video")[0];
                         if (video) {
                             video.currentTime = parseFloat(this.dataset.start);
