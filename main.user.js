@@ -206,10 +206,15 @@
         }
     }
 
-    function openModalDialog(text) {
+    function createDialog(start, chosenText) {
+        console.log("chosen text video start: ", start)
+        $("body").append(`<div id="modal" class="modal" style="min-height: 100px; z-index: 10001; font-size: 16px" >${chosenText}</div>`);
+    }
+
+    function openModalDialog(start, chosenText) {
         // Create a div element for the modal
         $("#modal").remove();
-        $("body").append(`<div id="modal" class="modal" style="min-height: 100px; z-index: 10001; font-size: 16px" >${text}</div>`);
+        createDialog(start, chosenText);
         $("#modal").modal({
             fadeDuration: 100
         })
@@ -235,7 +240,11 @@
                 let selectedTextAndElement = getSelectedTextAndElement();
                 const log = 'Selected text:' + selectedTextAndElement.text;
                 console.log(log, selectedTextAndElement.element, this);
-                openModalDialog(selectedTextAndElement.text);
+                if (selectedTextAndElement.text) {
+                    openModalDialog(selectedTextAndElement.dataset.start, selectedTextAndElement.text);
+                } else {
+                    openModalDialog(selectedTextAndElement.dataset.start, selectedTextAndElement.element.textContent);
+                }
             },
             items: {
                 "save": {
@@ -244,9 +253,7 @@
                     }
                 },
             },
-            events: {
-
-            }
+            events: {}
         });
     }
 
