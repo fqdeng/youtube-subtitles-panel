@@ -562,7 +562,7 @@
         switchButton.addEventListener('click', function () {
             show = !show;
             localStorage.setItem("switch", show ? 'true' : 'false');
-            this.textContent = `Visible: ${show ? 'ON' : 'OFF'}`;
+            this.textContent = `Plugin visible: ${show ? 'ON' : 'OFF'}`;
             if (show) {
                 $(draggableDiv).show()
             } else {
