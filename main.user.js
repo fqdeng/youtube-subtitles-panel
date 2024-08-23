@@ -31,9 +31,13 @@
     let contentDiv = document.createElement('div');
     let windowDiv = null;
     const textArea = document.createElement('textarea');
-    const item = localStorage.getItem("autoScrollEnabled");
     let select = null;
+
+
+    let item = localStorage.getItem("autoScrollEnabled");
     let autoScrollEnabled = !item || item === 'true'; // Initialize auto-scroll as enabled
+    item = localStorage.getItem("switch");
+    let show = !item || item === 'true';  // Initialize auto-scroll as enabled
 
 
     // Function to save position and size to localStorage
@@ -63,6 +67,20 @@
         return pattern.test(url);
     }
 
+
+    // Function to log fullscreen state
+    const logFullscreenState = () => {
+        if (document.fullscreenElement) {
+            console.log('YouTube is in fullscreen mode');
+            $(draggableDiv).hide()
+        } else {
+            console.log('YouTube exited fullscreen mode');
+            if (show){
+                $(draggableDiv).show()
+            }
+        }
+    };
+
     function onPageChanged() {
         console.log('url change');
         if (!isYouTubeVideoUrl()) {
@@ -70,7 +88,7 @@
                 $(draggableDiv).hide()
             }
         } else {
-            if (draggableDiv && !document.fullscreenElement) {
+            if (show && draggableDiv && !document.fullscreenElement) {
                 $(draggableDiv).show()
             }
         }
@@ -532,7 +550,34 @@
         });
     }
 
-    function createSwitchButton() {
+
+    function createWindowSwitchButton() {
+        const switchButton = document.createElement('button');
+        switchButton.textContent = `Plugin visible: ${show ? 'ON' : 'OFF'}`;
+        switchButton.id = 'toggleWindowVisible';
+        switchButton.style.padding = '5px 10px';
+        switchButton.style.cursor = 'pointer';
+
+        // Toggle feature state
+        switchButton.addEventListener('click', function () {
+            localStorage.setItem("switch", show ? 'true' : 'false');
+            show = !show;
+            this.textContent = `Visible: ${show ? 'ON' : 'OFF'}`;
+            if (show) {
+                $(draggableDiv).show()
+            } else {
+                $(draggableDiv).hide()
+            }
+        });
+
+        setInterval(() => {
+            if ($(`#toggleWindowVisible`).length === 0) {
+                $(`#buttons`).prepend(switchButton);
+            }
+        },1000);
+    }
+
+    function createAutoScrollSwitchButton() {
         const switchButton = document.createElement('button');
         switchButton.textContent = `Auto-Scroll: ${autoScrollEnabled ? 'ON' : 'OFF'}`;
         switchButton.id = 'toggleAutoScroll';
@@ -663,16 +708,6 @@
         }
     }
 
-    // Function to log fullscreen state
-    const logFullscreenState = () => {
-        if (document.fullscreenElement) {
-            console.log('YouTube is in fullscreen mode');
-            $(draggableDiv).hide()
-        } else {
-            console.log('YouTube exited fullscreen mode');
-            $(draggableDiv).show()
-        }
-    };
 
     function createWindowDiv() {
 
@@ -726,7 +761,8 @@
         // Assemble the draggable and resizable window
         windowDiv.appendChild(contentDiv);
         draggableDiv.appendChild(headerDiv);
-        createSwitchButton();
+        createAutoScrollSwitchButton();
+        createWindowSwitchButton();
         draggableDiv.appendChild(windowDiv);
 
         const selectContainer = $(`<div id="select-container"></div>`)
