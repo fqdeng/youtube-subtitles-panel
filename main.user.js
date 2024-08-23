@@ -560,8 +560,8 @@
 
         // Toggle feature state
         switchButton.addEventListener('click', function () {
-            localStorage.setItem("switch", show ? 'true' : 'false');
             show = !show;
+            localStorage.setItem("switch", show ? 'true' : 'false');
             this.textContent = `Visible: ${show ? 'ON' : 'OFF'}`;
             if (show) {
                 $(draggableDiv).show()
